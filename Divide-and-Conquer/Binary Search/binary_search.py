@@ -20,11 +20,10 @@ def binary_search_impl(keys, q, begin, end):
 
 
 def binary_search(keys, query):
-    assert all(keys[i] < keys[i + 1] for i in range(len(keys) - 1))
-    assert 1 <= len(keys) <= 3 * 10 ** 4
-
-    index = binary_search_impl(keys, query, 0, len(keys))
-    return index if index < len(keys) else -1
+    # assert all(keys[i] < keys[i + 1] for i in range(len(keys) - 1))
+    # assert 1 <= len(keys) <= 3 * 10 ** 4
+    i = binary_search_impl(keys, query, 0, len(keys))
+    return i if i < len(keys) and keys[i] == query else -1
 
 
 if __name__ == '__main__':

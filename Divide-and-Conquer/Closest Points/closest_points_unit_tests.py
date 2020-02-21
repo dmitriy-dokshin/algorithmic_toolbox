@@ -1,6 +1,7 @@
 import unittest
-from closest_points import minimum_distance_squared, minimum_distance_squared_naive, Point
 from random import randint
+
+from closest_points import minimum_distance_squared, minimum_distance_squared_naive, Point
 
 
 class ClosestPoints(unittest.TestCase):
@@ -26,7 +27,7 @@ class ClosestPoints(unittest.TestCase):
             delta=1e-03)
 
     def test_large(self):
-        self.test_random(10 ** 4)
+        self.test_random(10 ** 3)
 
 
 if __name__ == '__main__':

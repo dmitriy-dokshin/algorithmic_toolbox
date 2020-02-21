@@ -11,10 +11,6 @@ def distance_squared(first_point, second_point):
     return (first_point.x - second_point.x) ** 2 + (first_point.y - second_point.y) ** 2
 
 
-def distance(first_point, second_point):
-    return sqrt(distance_squared(first_point, second_point))
-
-
 def minimum_distance_squared_naive(points):
     min_distance_squared = float("inf")
 
@@ -25,66 +21,53 @@ def minimum_distance_squared_naive(points):
     return min_distance_squared
 
 
-def lower_bound(items, x, comp, begin, end):
-    while begin < end:
-        mid = begin + (end - begin) // 2
-        if comp(items[mid], x):
-            begin = mid + 1
-        else:
-            end = mid
-    return begin
-
-
-def minimum_distance(points, begin, end):
+def minimum_distance_squared_impl(points, ypoints, begin, end):
     if end - begin < 2:
         return float_info.max
     elif end - begin == 2:
-        return distance(points[begin], points[begin + 1])
+        return distance_squared(points[begin], points[begin + 1])
 
     mid = begin + (end - begin) // 2
-    dl = minimum_distance(points, begin, mid)
-    dr = minimum_distance(points, mid, end)
+    xmid = points[mid].x
+
+    lypoints = []
+    rypoints = []
+    for p in ypoints:
+        if p.x < xmid:
+            lypoints.append(p)
+        else:
+            rypoints.append(p)
+
+    dl = minimum_distance_squared_impl(points, lypoints, begin, mid)
+    dr = minimum_distance_squared_impl(points, rypoints, mid, end)
     d = min(dl, dr)
 
-    xless = lambda p, x: p.x < x
-    xless_or_eq = lambda p, x: p.x <= x
-    xmin = points[mid].x - d
-    xmax = points[mid].x + d
-    xbegin = lower_bound(points, xmin, xless, begin, mid)
-    xend = lower_bound(points, xmax, xless_or_eq, mid, end)
+    xmin = points[mid].x - sqrt(d)
+    xmax = points[mid].x + sqrt(d)
 
-    lpoints = []
-    i = xbegin
-    while i < mid:
-        lpoints.append(points[i])
-        i += 1
+    ypoints = [p for p in ypoints if xmin <= p.x <= xmax]
 
-    rpoints = []
-    while i < xend:
-        rpoints.append(points[i])
-        i += 1
+    for pi, p in enumerate(ypoints):
+        ymin = p.y - sqrt(d)
+        ymax = p.y + sqrt(d)
 
-    rpoints.sort(key=lambda p: p.y)
+        i = pi
+        while i > 0 and ypoints[i - 1].y >= ymin:
+            d = min(d, distance_squared(p, ypoints[i - 1]))
+            i -= 1
 
-    yless = lambda p, y: p.y < y
-    yless_or_eq = lambda p, y: p.y <= y
-    for pi, p in enumerate(lpoints):
-        ymin = p.y - d
-        ymax = p.y + d
-        ybegin = lower_bound(rpoints, ymin, yless, 0, len(rpoints))
-        yend = lower_bound(rpoints, ymax, yless_or_eq, 0, len(rpoints))
-        i = ybegin
-        while i < yend:
-            if i != pi:
-                d = min(d, distance(p, rpoints[i]))
-            i += 1
+        j = pi + 1
+        while j < len(ypoints) and ypoints[j].y <= ymax:
+            d = min(d, distance_squared(p, ypoints[j]))
+            j += 1
 
     return d
 
 
 def minimum_distance_squared(points):
     points.sort(key=lambda p: p.x)
-    return minimum_distance(points, 0, len(points)) ** 2
+    ypoints = sorted(points, key=lambda p: p.y)
+    return minimum_distance_squared_impl(points, ypoints, 0, len(points))
 
 
 if __name__ == '__main__':
