@@ -9,7 +9,8 @@ class ArithmeticExpression(unittest.TestCase):
             ("2+3", 5),
             ("2-3", -1),
             ("5-8+7*4-8+9", 200),
-            type here
+            ("8-5*3", 9),
+            ("8-5*3-5", 18)
         ):
             self.assertEqual(find_maximum_value(s), answer)
 

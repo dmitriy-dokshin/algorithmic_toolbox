@@ -13,8 +13,16 @@ def change_naive(money):
     return min_coins
 
 
-def change(money):
-    type here
+def change(money, coins=[1, 3, 4]):
+    result = [0] * (money + 1)
+    m = 1
+    while m <= money:
+        for coin in coins:
+            if coin <= m:
+                count = result[m - coin] + 1
+                result[m] = min(count, result[m]) if result[m] > 0 else count
+        m += 1
+    return result[money]
 
 
 if __name__ == '__main__':
